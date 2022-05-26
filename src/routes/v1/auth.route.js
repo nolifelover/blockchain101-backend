@@ -1,5 +1,6 @@
 const express = require('express');
 const config = require('../../config/config');
+const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const authValidation = require('../../validations/auth.validation');
 const authController = require('../../controllers/auth.controller');
@@ -15,12 +16,12 @@ if (config.env === 'developement') {
 
 router.post('/logout', validate(authValidation.logout), authController.logout);
 router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
-// router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);
-// router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
-// router.post('/send-verification-email', auth(), authController.sendVerificationEmail);
+router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);
+router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
+router.post('/send-verification-email', auth(), authController.sendVerificationEmail);
 router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
 router.post('/signature/register', validate(authValidation.signatureRegister), authController.signatureRegister);
-router.post('/signature/singin', validate(authValidation.signatureSignin), authController.registerWithAddress);
+router.post('/signature/signin', validate(authValidation.signatureSignin), authController.registerWithAddress);
 router.post(
   '/signature/authentication',
   validate(authValidation.signatureAuthentication),
@@ -33,6 +34,85 @@ module.exports = router;
  * tags:
  *   name: Auth
  *   description: Authentication
+ */
+
+/**
+ * @swagger
+ * /auth/signature/signin:
+ *   post:
+ *     summary: Login with wallet address
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - address
+ *             properties:
+ *               address:
+ *                 type: string
+ *             example:
+ *               address: 0x000...0000
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nonce:
+ *                   type: string
+ *                 msg:
+ *                   type: string
+ *               example:
+ *                 nonce: 12192
+ *                 msg: "Signin with OTP: 12192"
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /auth/signature/authentication:
+ *   post:
+ *     summary: Authentication with address and wallet signature
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - address
+ *               - signature
+ *             properties:
+ *               address:
+ *                 type: string
+ *               signature:
+ *                 type: string
+ *             example:
+ *               address: 0x000...0000
+ *               signature: 0x000...000
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 tokens:
+ *                   $ref: '#/components/schemas/AuthTokens'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
 
 /**
