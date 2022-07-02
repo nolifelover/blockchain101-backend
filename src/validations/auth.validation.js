@@ -61,13 +61,13 @@ const signatureRegister = {
 
 const signatureSignin = {
   body: Joi.object().keys({
-    address: Joi.string().required(),
+    address: Joi.string().custom(evmAddress).required(),
   }),
 };
 
 const signatureAuthentication = {
   body: Joi.object().keys({
-    address: Joi.string().required(),
+    address: Joi.string().custom(evmAddress).required(),
     signature: Joi.string().required(),
   }),
 };

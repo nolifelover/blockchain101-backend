@@ -107,7 +107,7 @@ const createUserWithAddress = async (address) => {
       username: address,
       name: address,
       address,
-      email: `${address}@mail.freecity.finance`,
+      email: `${address}@mail.example`,
       password: crypto.randomBytes(20).toString('hex'),
     });
   }
@@ -131,6 +131,7 @@ const loginUserWithAddressAndSignature = async (address, signature) => {
   }
   const msg = `${config.constance.verifyTemplate}: ${user.nonce}`;
   logger.debug(`verify message %o`, msg);
+  logger.debug(`signature %o`, signature);
   const signerAddress = ethers.utils.verifyMessage(msg, signature);
   logger.debug(`signerAddress %o`, signerAddress);
   if (signerAddress.toLowerCase() === address.toLowerCase()) {
